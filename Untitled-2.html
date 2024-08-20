@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 2rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="file"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #f4b400;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #e3a700;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .admin-section {
+            margin-bottom: 2rem;
+        }
+
+        .admin-section h2 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel</h1>
+
+        <div class="admin-section">
+            <h2>İletişim Bilgilerini Güncelle</h2>
+            <form id="update-contact-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Telefon</label>
+                    <input type="text" id="phone" name="phone">
+                </div>
+                <button type="submit" class="btn btn-block">Güncelle</button>
+            </form>
+        </div>
+
+        <div class="admin-section">
+            <h2>Yeni İlan Ekle</h2>
+            <form id="add-listing-form">
+                <div class="form-group">
+                    <label for="title">Başlık</label>
+                    <input type="text" id="title" name="title">
+                </div>
+                <div class="form-group">
+                    <label for="description">Açıklama</label>
+                    <textarea id="description" name="description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="price">Fiyat</label>
+                    <input type="text" id="price" name="price">
+                </div>
+                <div class="form-group">
+                    <label for="images">Resimler</label>
+                    <input type="file" id="images" name="images" multiple>
+                </div>
+                <button type="submit" class="btn btn-block">Ekle</button>
+            </form>
+        </div>
+
+        <div class="admin-section">
+            <h2>Slider Resmi Değiştir</h2>
+            <form id="update-slider-form">
+                <div class="form-group">
+                    <label for="slider-image">Slider Resmi</label>
+                    <input type="file" id="slider-image" name="slider-image">
+                </div>
+                <button type="submit" class="btn btn-block">Değiştir</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        // İletişim bilgilerini güncelleme formu
+        document.getElementById('update-contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            localStorage.setItem('contactEmail', email);
+            localStorage.setItem('contactPhone', phone);
+            alert('İletişim bilgileri güncellendi.');
+        });
+
+        // Yeni ilan ekleme formu
+        document.getElementById('add-listing-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const price = document.getElementById('price').value;
+            const images = document.getElementById('images').files;
+
+            const listings = JSON.parse(localStorage.getItem('listings')) || [];
+            const newListing = {
+                title,
+                description,
+                price,
+                images: Array.from(images).map(file => URL.createObjectURL(file))
+            };
+
+            listings.push(newListing);
+            localStorage.setItem('listings', JSON.stringify(listings));
+            alert('Yeni ilan eklendi.');
+        });
+
+        // Slider resmini güncelleme formu
+        document.getElementById('update-slider-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const sliderImage = document.getElementById('slider-image').files[0];
+            if (sliderImage) {
+                const sliderImageURL = URL.createObjectURL(sliderImage);
+                localStorage.setItem('sliderImage', sliderImageURL);
+                alert('Slider resmi güncellendi.');
+            }
+        });
+
+        // Sayfa yüklendiğinde localStorage'dan verileri yükle
+        window.addEventListener('load', function() {
+            const email = localStorage.getItem('contactEmail');
+            const phone = localStorage.getItem('contactPhone');
+            if (email) {
+                document.getElementById('email').value = email;
+            }
+            if (phone) {
+                document.getElementById('phone').value = phone;
+            }
+        });
+    </script>
+</body>
+</html>
